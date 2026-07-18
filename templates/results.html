@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Model Results — FakeRadar </title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0D0F14;--surf:#161A22;--surf2:#1E2330;--bdr:#2A3045;--gr:#3DD68C;--rd:#FF5370;--bl:#4D8FFF;--tx:#E4E8F0;--dim:#7B8499;--dimmer:#4A5168;--r:12px;--rs:8px;--sh:0 4px 24px rgba(0,0,0,.45);--tr:.22s ease}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;line-height:1.6}
+.hdr{background:var(--surf);border-bottom:1px solid var(--bdr);padding:0 2rem;position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{display:flex;align-items:center;gap:.6rem;font-weight:700;font-size:1.05rem}
+.logo-ic{width:32px;height:32px;background:linear-gradient(135deg,var(--bl),var(--gr));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem}
+.nav a{color:var(--dim);text-decoration:none;font-size:.875rem;font-weight:500;margin-left:1.5rem;transition:color var(--tr)}
+.nav a:hover{color:var(--tx)}.nav a.active{color:var(--bl)}
+main{max-width:1040px;margin:0 auto;padding:2.5rem 1.5rem 5rem}
+.ptitle{font-size:1.7rem;font-weight:700;letter-spacing:-.02em;margin-bottom:.4rem}
+.psub{color:var(--dim);font-size:.9rem;margin-bottom:2rem}
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem}
+.sc{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:1.2rem 1.3rem}
+.sc.h{border-color:var(--bl)}
+.sc .val{font-family:'JetBrains Mono',monospace;font-size:1.7rem;font-weight:500;color:var(--bl)}
+.sc.h .val{color:var(--gr)}
+.sc .key{font-size:.78rem;color:var(--dim);margin-top:.2rem}
+.sh{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--dimmer);margin:2.2rem 0 1rem;padding-bottom:.5rem;border-bottom:1px solid var(--bdr)}
+.c2{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
+.c1{margin-bottom:1.25rem}
+.cc{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:1.4rem}
+.cc h3{font-size:.875rem;font-weight:600;margin-bottom:1rem}
+.cc img{width:100%;border-radius:var(--rs);display:block}
+.tw{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);overflow:auto;margin-bottom:1.25rem}
+table{width:100%;border-collapse:collapse;font-size:.875rem}
+thead tr{background:var(--surf2);border-bottom:1px solid var(--bdr)}
+th{text-align:left;padding:.9rem 1.1rem;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--dimmer);white-space:nowrap}
+td{padding:.85rem 1.1rem;border-bottom:1px solid var(--bdr);font-family:'JetBrains Mono',monospace;font-size:.85rem}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--surf2)}
+.mn{font-family:'Inter',sans-serif;font-weight:500;font-size:.875rem}
+.br{background:rgba(77,143,255,.07)!important}
+.br .mn::after{content:' ★';color:var(--bl);font-size:.75rem}
+.sh_{color:var(--gr);font-weight:500}
+.sm_{color:var(--bl)}
+.sl_{color:var(--dim)}
+footer{text-align:center;color:var(--dimmer);font-size:.78rem;padding:2rem;border-top:1px solid var(--bdr)}
+@media(max-width:680px){.c2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="logo"><div class="logo-ic">🛡️</div>FakeRadar <span style="color:var(--dim);font-weight:300;"></span></div>
+  <nav class="nav"><a href="/">Detector</a><a href="/results" class="active">Model Results</a></nav>
+</header>
+<main>
+  <h1 class="ptitle">📊 Model Evaluation Dashboard</h1>
+  <p class="psub">All 6 classifiers trained on 35,751 articles, evaluated on 8,938 held-out articles from your dataset. Best model by F1: <strong style="color:var(--bl)">{{ meta.model_name }}</strong></p>
+
+  <div class="sg">
+    <div class="sc h"><div class="val">{{ meta.accuracy }}%</div><div class="key">Accuracy</div></div>
+    <div class="sc h"><div class="val">{{ meta.f1_score }}%</div><div class="key">F1 Score</div></div>
+    <div class="sc h"><div class="val">{{ meta.precision }}%</div><div class="key">Precision</div></div>
+    <div class="sc h"><div class="val">{{ meta.recall }}%</div><div class="key">Recall</div></div>
+    <div class="sc h"><div class="val">{{ meta.auc_roc }}%</div><div class="key">AUC-ROC</div></div>
+    <div class="sc"><div class="val">44k</div><div class="key">Total articles</div></div>
+    <div class="sc"><div class="val">100k</div><div class="key">TF-IDF features</div></div>
+    <div class="sc"><div class="val">6</div><div class="key">Models compared</div></div>
+  </div>
+
+  <div class="sh">Dataset Exploration</div>
+  <div class="c1"><div class="cc"><h3>Class Distribution · Subject Breakdown · Article Length</h3><img src="/static/images/eda_overview.png" alt="EDA Overview"/></div></div>
+
+  <div class="sh">Model Comparison</div>
+  <div class="c1"><div class="cc"><h3>All Metrics Across All Models</h3><img src="/static/images/model_comparison.png" alt="Model Comparison"/></div></div>
+  <div class="c2">
+    <div class="cc"><h3>ROC Curves</h3><img src="/static/images/roc_curves.png" alt="ROC Curves"/></div>
+    <div class="cc"><h3>Metrics Heatmap</h3><img src="/static/images/metrics_heatmap.png" alt="Metrics Heatmap"/></div>
+  </div>
+
+  <div class="sh">Detailed Evaluation</div>
+  <div class="c1"><div class="cc"><h3>Confusion Matrices — Top 4 Models</h3><img src="/static/images/confusion_matrices.png" alt="Confusion Matrices"/></div></div>
+  <div class="c1"><div class="cc"><h3>Training Time per Model</h3><img src="/static/images/training_time.png" alt="Training Time"/></div></div>
+
+  <div class="sh">Full Results Table</div>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Model</th><th>Accuracy</th><th>Precision</th><th>Recall</th><th>F1 Score</th><th>AUC-ROC</th><th>Train Time</th></tr></thead>
+      <tbody>
+        {% for row in table_rows %}
+        <tr class="{% if row.is_best %}br{% endif %}">
+          <td class="mn">{{ row.model }}</td>
+          <td class="{% if row.accuracy>=99 %}sh_{% elif row.accuracy>=97 %}sm_{% else %}sl_{% endif %}">{{ row.accuracy }}%</td>
+          <td class="{% if row.precision>=99 %}sh_{% elif row.precision>=97 %}sm_{% else %}sl_{% endif %}">{{ row.precision }}%</td>
+          <td class="{% if row.recall>=99 %}sh_{% elif row.recall>=97 %}sm_{% else %}sl_{% endif %}">{{ row.recall }}%</td>
+          <td class="{% if row.f1_score>=99 %}sh_{% elif row.f1_score>=97 %}sm_{% else %}sl_{% endif %}">{{ row.f1_score }}%</td>
+          <td class="{% if row.auc_roc>=99 %}sh_{% elif row.auc_roc>=97 %}sm_{% else %}sl_{% endif %}">{{ row.auc_roc }}%</td>
+          <td style="color:var(--dim)">{{ row.train_time }}s</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</main>
+<footer>Built with Python · Scikit-learn · NLTK · Flask &nbsp;|&nbsp; ISOT Fake News Dataset (44,689 articles)</footer>
+</body>
+</html>

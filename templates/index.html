@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Fake News Detector — AI Powered</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0D0F14;--surf:#161A22;--surf2:#1E2330;--bdr:#2A3045;--gr:#3DD68C;--rd:#FF5370;--bl:#4D8FFF;--tx:#E4E8F0;--dim:#7B8499;--dimmer:#4A5168;--r:12px;--rs:8px;--sh:0 4px 24px rgba(0,0,0,.45);--tr:.22s ease}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;line-height:1.6}
+.hdr{background:var(--surf);border-bottom:1px solid var(--bdr);padding:0 2rem;position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{display:flex;align-items:center;gap:.6rem;font-weight:700;font-size:1.05rem}
+.logo-ic{width:32px;height:32px;background:linear-gradient(135deg,var(--bl),var(--gr));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem}
+.nav a{color:var(--dim);text-decoration:none;font-size:.875rem;font-weight:500;margin-left:1.5rem;transition:color var(--tr)}
+.nav a:hover,.nav a.active{color:var(--bl)}
+main{max-width:860px;margin:0 auto;padding:3rem 1.5rem 5rem}
+.hero{text-align:center;margin-bottom:2.5rem}
+.badge{display:inline-flex;align-items:center;gap:.4rem;background:rgba(77,143,255,.12);border:1px solid rgba(77,143,255,.3);color:var(--bl);font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.35rem .9rem;border-radius:100px;margin-bottom:1.4rem}
+.hero h1{font-size:clamp(2rem,5vw,2.8rem);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:.8rem}
+.hero h1 span{color:var(--bl)}
+.hero p{color:var(--dim);font-size:1.05rem;max-width:520px;margin:0 auto}
+.pill{display:inline-flex;align-items:center;gap:.5rem;background:var(--surf2);border:1px solid var(--bdr);border-radius:100px;padding:.4rem 1rem;font-size:.8rem;color:var(--dim);margin-top:1.2rem}
+.pill strong{color:var(--tx)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--gr);flex-shrink:0;box-shadow:0 0 6px var(--gr)}
+.card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:1.8rem;margin-bottom:1.25rem;box-shadow:var(--sh)}
+.clabel{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--dimmer);margin-bottom:.9rem}
+textarea{width:100%;min-height:220px;background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--rs);color:var(--tx);font-family:'Inter',sans-serif;font-size:.94rem;padding:1rem;resize:vertical;outline:none;transition:border-color var(--tr);line-height:1.65}
+textarea::placeholder{color:var(--dimmer)}
+textarea:focus{border-color:var(--bl)}
+.char{text-align:right;font-size:.78rem;color:var(--dimmer);margin-top:.4rem}
+.examples{display:flex;gap:.6rem;margin-top:.75rem;flex-wrap:wrap}
+.ex-btn{background:var(--surf2);border:1px solid var(--bdr);border-radius:100px;color:var(--dim);font-size:.78rem;padding:.35rem .85rem;cursor:pointer;transition:all var(--tr)}
+.ex-btn:hover{border-color:var(--bl);color:var(--bl)}
+.btn-go{width:100%;padding:.9rem 2rem;background:linear-gradient(135deg,var(--bl),#7B6FFF);border:none;border-radius:var(--rs);color:#fff;font-family:'Inter',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;transition:opacity var(--tr),transform var(--tr);display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:1.1rem;letter-spacing:-.01em}
+.btn-go:hover:not(:disabled){opacity:.9;transform:translateY(-1px)}
+.btn-go:disabled{opacity:.5;cursor:not-allowed}
+.spin{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .75s linear infinite;display:none}
+@keyframes sp{to{transform:rotate(360deg)}}
+#rp{display:none}
+#rp.show{display:block;animation:fu .35s ease}
+@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.verdict{display:flex;align-items:center;gap:1.2rem;margin-bottom:1.5rem}
+.v-icon{font-size:2.8rem;line-height:1;flex-shrink:0}
+.v-lbl{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--dimmer);margin-bottom:.2rem}
+.v-txt{font-size:2rem;font-weight:700;letter-spacing:-.02em;line-height:1}
+.v-txt.real{color:var(--gr)}.v-txt.fake{color:var(--rd)}
+.v-sub{font-size:.85rem;color:var(--dim);margin-top:.3rem}
+.conf-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem}
+.ch{font-size:.82rem;font-weight:600;margin-bottom:.4rem;display:flex;justify-content:space-between}
+.lr{color:var(--gr)}.lf{color:var(--rd)}
+.trk{height:8px;background:var(--surf2);border-radius:100px;overflow:hidden}
+.fill{height:100%;border-radius:100px;transition:width .7s cubic-bezier(.4,0,.2,1)}
+.fill.real{background:linear-gradient(90deg,#2ECC6B,var(--gr))}
+.fill.fake{background:linear-gradient(90deg,#CC2E2E,var(--rd))}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem}
+.chip{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--rs);padding:.7rem .9rem}
+.chip .val{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:500}
+.chip .key{font-size:.72rem;color:var(--dimmer);margin-top:.15rem}
+#err{display:none;background:rgba(255,83,112,.1);border:1px solid rgba(255,83,112,.3);color:var(--rd);border-radius:var(--rs);padding:.8rem 1rem;font-size:.875rem;margin-top:.75rem}
+footer{text-align:center;color:var(--dimmer);font-size:.78rem;padding:2rem;border-top:1px solid var(--bdr)}
+@media(max-width:540px){.conf-row,.stats{grid-template-columns:1fr}.verdict{flex-direction:column;text-align:center}}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="logo"><div class="logo-ic">🛡️</div>FakeRadar <span style="color:var(--dim);font-weight:300;"></span></div>
+  <nav class="nav"><a href="/" class="active">Detector</a><a href="/results">Model Results</a></nav>
+</header>
+<main>
+  <section class="hero">
+    <div class="badge">🤖 NLP · Machine Learning · TF-IDF</div>
+    <h1>Is this news <span>real</span> or fake?</h1>
+    <p>Paste any news article below. Our AI analyses its language patterns and gives you a verdict in milliseconds.</p>
+    <div class="pill">
+      <span class="dot"></span>
+      Active model: <strong>{{ meta.model_name }}</strong>&nbsp;·&nbsp;
+      Accuracy <strong>{{ meta.accuracy }}%</strong>&nbsp;·&nbsp;F1 <strong>{{ meta.f1_score }}%</strong>
+    </div>
+  </section>
+
+  <div class="card">
+    <div class="clabel">Paste Article Text</div>
+    <textarea id="at" placeholder="Paste the full body or headline of a news article here…&#10;&#10;The more text you provide, the more accurate the prediction."></textarea>
+    <div class="char"><span id="cc">0</span> characters</div>
+    <div class="examples">
+      <span style="font-size:.78rem;color:var(--dimmer);margin-right:.2rem">Try example:</span>
+      <button class="ex-btn" data-t="real">✅ Real news</button>
+      <button class="ex-btn" data-t="fake">❌ Fake news</button>
+      <button class="ex-btn" data-t="clear">🗑️ Clear</button>
+    </div>
+    <button class="btn-go" id="gb"><div class="spin" id="sp"></div><span id="bl">🔍 Analyse Article</span></button>
+    <div id="err"></div>
+  </div>
+
+  <div class="card" id="rp">
+    <div class="clabel">Analysis Result</div>
+    <div class="verdict">
+      <div class="v-icon" id="vi">—</div>
+      <div><div class="v-lbl">Classification</div><div class="v-txt" id="vt">—</div><div class="v-sub" id="vs">Awaiting analysis…</div></div>
+    </div>
+    <div class="conf-row">
+      <div><div class="ch"><span class="lr">Real News Confidence</span><span id="crp">—</span></div><div class="trk"><div class="fill real" id="br" style="width:0%"></div></div></div>
+      <div><div class="ch"><span class="lf">Fake News Confidence</span><span id="cfp">—</span></div><div class="trk"><div class="fill fake" id="bf" style="width:0%"></div></div></div>
+    </div>
+    <div class="stats">
+      <div class="chip"><div class="val" id="sw">—</div><div class="key">Input words</div></div>
+      <div class="chip"><div class="val" id="sp2">—</div><div class="key">Processed tokens</div></div>
+      <div class="chip"><div class="val" id="sl">—</div><div class="key">Latency</div></div>
+    </div>
+  </div>
+</main>
+<footer>Built with Python · Scikit-learn · NLTK · Flask &nbsp;|&nbsp; ISOT Fake News Dataset (44,689 articles) &nbsp;|&nbsp; Best Model: {{ meta.model_name }} — {{ meta.accuracy }}% Accuracy</footer>
+<script>
+const EX={
+  real:`The Federal Reserve held interest rates steady on Wednesday and said inflation had eased somewhat but still needed to fall further before officials would be ready to cut rates. The benchmark overnight interest rate has been in the 5.25%-5.50% range since July. Policymakers kept it there in a unanimous decision, noting economic activity has been expanding at a solid pace but that inflation remains elevated. Fed Chair Jerome Powell said the committee would need greater confidence that inflation is moving sustainably toward 2% before reducing rates.`,
+  fake:`BREAKING: Scientists at MIT have confirmed that drinking five cups of coffee daily cures cancer 100% of the time, according to a new study. The research, which involved over 1 million participants, found that caffeine molecules directly destroy tumour cells within 48 hours. The pharmaceutical industry has been suppressing these findings for years. The President has ordered the FDA to immediately approve coffee as an official cancer treatment, available free at all Starbucks locations starting next Monday. Share this before the mainstream media deletes it!`
+};
+const ta=document.getElementById('at'),cc=document.getElementById('cc');
+const gb=document.getElementById('gb'),bl=document.getElementById('bl'),sp=document.getElementById('sp');
+ta.addEventListener('input',()=>cc.textContent=ta.value.length.toLocaleString());
+document.querySelectorAll('.ex-btn').forEach(b=>b.addEventListener('click',()=>{
+  const t=b.dataset.t;
+  ta.value=t==='clear'?'':EX[t]; cc.textContent=ta.value.length.toLocaleString();
+  document.getElementById('err').style.display='none';
+  document.getElementById('rp').classList.remove('show');
+}));
+gb.addEventListener('click',async()=>{
+  const text=ta.value.trim();
+  document.getElementById('err').style.display='none';
+  document.getElementById('rp').classList.remove('show');
+  if(!text){showErr('Please paste an article before analysing.');return}
+  if(text.length<50){showErr('Article too short — please paste at least 50 characters.');return}
+  setLoad(true);
+  try{
+    const r=await fetch('/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})});
+    const d=await r.json();
+    if(!r.ok||d.error){showErr(d.error||'Prediction failed.');return}
+    showResult(d);
+  }catch(e){showErr('Network error. Is the server running?');}
+  finally{setLoad(false);}
+});
+function showResult(d){
+  const isR=d.label===1;
+  document.getElementById('vi').textContent=isR?'✅':'❌';
+  const vt=document.getElementById('vt');
+  vt.textContent=d.label_text; vt.className='v-txt '+(isR?'real':'fake');
+  document.getElementById('vs').textContent=`Model confidence: ${isR?d.confidence_real:d.confidence_fake}%`;
+  document.getElementById('crp').textContent=d.confidence_real+'%';
+  document.getElementById('cfp').textContent=d.confidence_fake+'%';
+  const br=document.getElementById('br'),bf=document.getElementById('bf');
+  br.style.width='0%'; bf.style.width='0%';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{br.style.width=d.confidence_real+'%';bf.style.width=d.confidence_fake+'%';}));
+  document.getElementById('sw').textContent=d.word_count.toLocaleString();
+  document.getElementById('sp2').textContent=d.processed_word_count.toLocaleString();
+  document.getElementById('sl').textContent=d.latency_ms+' ms';
+  document.getElementById('rp').classList.add('show');
+  document.getElementById('rp').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function setLoad(on){gb.disabled=on;sp.style.display=on?'block':'none';bl.textContent=on?'Analysing…':'🔍 Analyse Article';}
+function showErr(m){const e=document.getElementById('err');e.textContent='⚠️ '+m;e.style.display='block';}
+</script>
+</body>
+</html>
